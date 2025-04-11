@@ -100,3 +100,32 @@
   background-size: 800% 800%;
   animation: gradient 5s ease infinite;
 }
+
+
+/* Apply smooth transitions to all buttons */
+button, a {
+  @apply transition-all duration-300;
+}
+
+/* Custom glowing effect for elements with glow class */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #0070F3, rgba(0, 112, 243, 0.5), transparent);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.glow-effect:hover::before {
+  opacity: 1;
+}

@@ -3,8 +3,7 @@ import Image from 'next/image';
 import { FaPaperclip, FaUpload, FaGlobe, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAppDispatch } from '@/redux/hooks';
-import axios from 'axios';
-import { userData } from '@/redux/slices/userSlice';
+import GlowButton from '@/components/ui/glowButton';
 import toast from 'react-hot-toast';
 import { Loader2, SparklesIcon } from 'lucide-react';
 import JobSearchResults from './job-result';
@@ -28,6 +27,13 @@ const HeroSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const [showResumePopup, setShowResumePopup] = useState(false); // New state for resume popup
   const [jobApiData, setJobApiData] = useState<any>(null)
   const [isApiLoading, setIsApiLoading] = useState(false)
+  const buttonItems = [
+    { text: 'NEW', secondaryText: 'Build a mobile app with Expo', icon: null },
+    { text: 'Recharts dashboard', secondaryText: null, icon: null },
+    { text: 'Habit tracker', secondaryText: null, icon: null },
+    { text: 'Real estate listings', secondaryText: null, icon: null },
+    { text: 'Developer portfolio', secondaryText: null, icon: null }
+  ];
 
   useEffect(() => {
     const storedCount = localStorage.getItem(STORAGE_KEY);
@@ -98,7 +104,7 @@ const HeroSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             transition: 'opacity 0.25s linear',
           } as React.CSSProperties}
         >
-        {/* Light Rays (existing code) */}
+        {/* Light Ray 1 */}
         <div className="absolute rounded-full" 
           style={{
             background: 'var(--ray-gradient)',
@@ -110,7 +116,64 @@ const HeroSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             filter: 'blur(110px)'
           }}
         />
-        {/* Other light rays... */}
+        {/* Light Ray 2 */}
+        <div className="absolute rounded-full" 
+          style={{
+            background: 'var(--ray-gradient)',
+            width: '110px',
+            height: '400px',
+            transform: 'rotate(-20deg)',
+            top: '-280px',
+            left: '350px',
+            mixBlendMode: 'overlay',
+            opacity: '0.6',
+            filter: 'blur(60px)'
+          }}
+        />
+        {/* Light Ray 3 */}
+        <div className="absolute rounded-full" 
+          style={{
+            background: 'var(--ray-gradient)',
+            width: '400px',
+            height: '370px',
+            transform: 'rotate(95deg)',
+            top: '-350px',
+            left: '200px',
+            mixBlendMode: 'overlay',
+            opacity: '0.6',
+            filter: 'blur(21px)'
+          }}
+        />
+        {/* Light Ray 4 */}
+        <div className="absolute rounded-full" 
+          style={{
+            background: 'var(--ray-gradient)',
+            position: 'absolute',
+            width: '330px',
+            height: '370px',
+            transform: 'rotate(75deg)',
+            top: '-330px',
+            left: '50px',
+            mixBlendMode: 'overlay',
+            opacity: '0.5',
+            filter: 'blur(21px)'
+          }}
+        />
+        {/* Light Ray 5 */}
+        <div className="absolute rounded-full" 
+          style={{
+            background: 'var(--ray-gradient)',
+            position: 'absolute',
+            width: '110px',
+            height: '400px',
+            transform: 'rotate(-40deg)',
+            top: '-280px',
+            left: '-10px',
+            mixBlendMode: 'overlay',
+            opacity: '0.8',
+            filter: 'blur(60px)'
+          }}
+        />
       </div>
 
       {/* Conditional Rendering for Hero Content or Job Search Results */}
@@ -173,15 +236,16 @@ const HeroSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
       {/* Only show suggestion buttons when no results */}
       {(!showResults || queryCount >= QUERY_LIMIT) && (
         <div className="flex flex-wrap justify-center gap-3 mt-6">
-          {['Recharts dashboard', 'Habit tracker', 'Real estate listings', 'Developer portfolio'].map((item) => (
-            <button
-              key={item}
-              className="bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg px-5 py-2 text-sm font-medium"
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+        {buttonItems.slice(1).map((item) => (
+          <GlowButton
+            key={item.text}
+            size="sm"
+            variant="secondary"
+          >
+            {item.text}
+          </GlowButton>
+        ))}
+      </div>
       )}
       </div>
       )}

@@ -104,10 +104,10 @@ export const fetchChats = async () => {
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/chat/all`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `token=${token}`,
-        },
+headers: {
+"Content-Type": "application/json",
+},
+
         credentials: "include",
       }
     );

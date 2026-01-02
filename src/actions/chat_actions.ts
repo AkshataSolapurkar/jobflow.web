@@ -72,10 +72,10 @@ export const renameChatById = async (chatId: string, newName: string) => {
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/chat/rename?id=${chatId}`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `token=${token}`,
-        },
+headers: {
+"Content-Type": "application/json",
+},
+
         credentials: "include",
         body: JSON.stringify({
           name: newName,

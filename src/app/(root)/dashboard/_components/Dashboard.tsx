@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import debounce from "lodash.debounce";
 import { getJobById, getJobData, scrapeAndCreateJobs } from "@/actions/data_actions";
+import { updateJob, updateJobById, updateChat, deleteChatById } from "@/actions/chat_actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/shared/Loader";
@@ -10,6 +11,7 @@ import { renderJobCard } from "@/components/shared/jobCard";
 import AppliedJobsModal from "./appliedJobs";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import type { Job } from "@/types/job";
 
 // Job portals
 const jobPortals = [
@@ -95,6 +97,58 @@ export default function Dashboard() {
       toast.error(error?.message || "Failed to scrape and create jobs");
     } finally {
       setScraping(false);
+    }
+  };
+
+  // Update job handler
+  const handleUpdateJob = async (jobId: string, updateData: Partial<Job>) => {
+    try {
+      const data = await updateJob(jobId, updateData);
+      toast.success("Job updated successfully!");
+      // Refresh the jobs list
+      setPage(1);
+      setJobs([]);
+      fetchJobs(1, selectedPortal, searchQuery);
+      return data;
+    } catch (error: any) {
+      console.error("Error updating job:", error);
+      toast.error(error?.message || "Failed to update job");
+      throw error;
+    }
+  };
+
+  // Update job by ID handler (alias for updateJob)
+  const handleUpdateJobById = async (jobId: string, updateData: Partial<Job>) => {
+    return handleUpdateJob(jobId, updateData);
+  };
+
+  // Update chat handler
+  const handleUpdateChat = async (chatId: string, updateData: { name?: string; description?: string }) => {
+    try {
+      const data = await updateChat(chatId, updateData);
+      toast.success("Chat updated successfully!");
+      return data;
+    } catch (error: any) {
+      console.error("Error updating chat:", error);
+      toast.error(error?.message || "Failed to update chat");
+      throw error;
+    }
+  };
+
+  // Delete chat by ID handler
+  const handleDeleteChatById = async (chatId: string) => {
+    if (!confirm('Are you sure you want to delete this chat?')) {
+      return;
+    }
+
+    try {
+      const data = await deleteChatById(chatId);
+      toast.success("Chat deleted successfully!");
+      return data;
+    } catch (error: any) {
+      console.error("Error deleting chat:", error);
+      toast.error(error?.message || "Failed to delete chat");
+      throw error;
     }
   };
 

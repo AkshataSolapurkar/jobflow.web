@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import debounce from "lodash.debounce";
-import { getJobById, getJobData } from "@/actions/data_actions";
+import { getJobById, getJobData, scrapeAndCreateJobs } from "@/actions/data_actions";
+import { updateJob, updateJobById, updateChat, deleteChatById } from "@/actions/chat_actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/shared/Loader";
 import { renderJobCard } from "@/components/shared/jobCard";
 import AppliedJobsModal from "./appliedJobs";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import type { Job } from "@/types/job";
 
 // Job portals
 const jobPortals = [
@@ -31,6 +35,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedJobId, setAppliedJobId] = useState('')
   const [appliedJob, setAppliedJob] = useState()
+  const [scraping, setScraping] = useState(false)
 
   // Fetch jobs from API
   const fetchJobs = async (page: number, portal: string, query: string) => {
@@ -77,11 +82,100 @@ export default function Dashboard() {
   // Load more jobs
   const loadMoreJobs = () => setPage((prevPage) => prevPage + 1);
 
+  // Scrape and create jobs
+  const handleScrapeAndCreateJobs = async () => {
+    setScraping(true);
+    try {
+      const data = await scrapeAndCreateJobs();
+      toast.success("Jobs scraped and created successfully!");
+      // Refresh the jobs list after scraping
+      setPage(1);
+      setJobs([]);
+      fetchJobs(1, selectedPortal, searchQuery);
+    } catch (error: any) {
+      console.error("Error scraping jobs:", error);
+      toast.error(error?.message || "Failed to scrape and create jobs");
+    } finally {
+      setScraping(false);
+    }
+  };
+
+  // Update job handler
+  const handleUpdateJob = async (jobId: string, updateData: Partial<Job>) => {
+    try {
+      const data = await updateJob(jobId, updateData);
+      toast.success("Job updated successfully!");
+      // Refresh the jobs list
+      setPage(1);
+      setJobs([]);
+      fetchJobs(1, selectedPortal, searchQuery);
+      return data;
+    } catch (error: any) {
+      console.error("Error updating job:", error);
+      toast.error(error?.message || "Failed to update job");
+      throw error;
+    }
+  };
+
+  // Update job by ID handler (alias for updateJob)
+  const handleUpdateJobById = async (jobId: string, updateData: Partial<Job>) => {
+    return handleUpdateJob(jobId, updateData);
+  };
+
+  // Update chat handler
+  const handleUpdateChat = async (chatId: string, updateData: { name?: string; description?: string }) => {
+    try {
+      const data = await updateChat(chatId, updateData);
+      toast.success("Chat updated successfully!");
+      return data;
+    } catch (error: any) {
+      console.error("Error updating chat:", error);
+      toast.error(error?.message || "Failed to update chat");
+      throw error;
+    }
+  };
+
+  // Delete chat by ID handler
+  const handleDeleteChatById = async (chatId: string) => {
+    if (!confirm('Are you sure you want to delete this chat?')) {
+      return;
+    }
+
+    try {
+      const data = await deleteChatById(chatId);
+      toast.success("Chat deleted successfully!");
+      return data;
+    } catch (error: any) {
+      console.error("Error deleting chat:", error);
+      toast.error(error?.message || "Failed to delete chat");
+      throw error;
+    }
+  };
+
 
 
   return (
     <div className="p-4">
       <AppliedJobsModal jobs={jobs} />
+      
+      {/* Scrape and Create Jobs Button */}
+      <div className="mb-4 flex justify-end">
+        <Button
+          onClick={handleScrapeAndCreateJobs}
+          disabled={scraping || loading}
+          className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {scraping ? (
+            <span className="flex items-center">
+              <Loader />
+              <span className="ml-2">Scraping Jobs...</span>
+            </span>
+          ) : (
+            "Scrape & Create Jobs"
+          )}
+        </Button>
+      </div>
+
       {loading && (
         <div className="flex justify-center items-center h-32">
           <Loader />
